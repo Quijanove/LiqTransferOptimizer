@@ -1,4 +1,4 @@
-liquid,pipette,volume,aspiration_rate,dispense_rate,density,m,%error,time_for_1000
+liquid,pipette,volume,aspiration_rate,dispense_rate,density,m,%error,time_asp_1000
 Viscosity_std_204,rLine1000,1000,127.1307751,127.1307751,0.8639,0.758602865,-12.18857917,35.73183203
 Viscosity_std_204,rLine1000,500,127.1307751,127.1307751,0.8639,0.402935827,-6.717021231,35.73183203
 Viscosity_std_204,rLine1000,300,127.1307751,127.1307751,0.8639,0.238252765,-8.07085513,35.73183203
