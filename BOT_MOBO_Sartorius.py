@@ -52,7 +52,7 @@ density = 0.8736
 # Do not change
 liq = BO_LiqTransfer(liquid_name)
 # folder = (r"C:\Users\admin\Documents\GitHub\viscosity_liquid_transfer_Pablo\Sartorious_experiments\Initialisation_Data")
-liq.data_from_csv(liquid_name+'_BOTorch_exp3.csv')
+liq.data_from_csv(f'{liquid_name}_BOTorch_exp3.csv')
 liq.data
 
 # %%
@@ -62,8 +62,8 @@ liquid_name = 'Viscosity_std_' + std
 density = 0.8736
 # Do not change
 liq = BO_LiqTransfer(liquid_name)
-folder = (r"C:\Users\admin\Documents\GitHub\viscosity_liquid_transfer_Pablo\Sartorious_experiments\Initialisation_Data")
-liq.data_from_csv(folder+r'/'+'Initialisation_'+std+'.csv')
+folder = r"C:\Users\admin\Documents\GitHub\viscosity_liquid_transfer_Pablo\Sartorious_experiments\Initialisation_Data"
+liq.data_from_csv(folder + f'\\Initialisation_{std}.csv')
 liq.data
 
 # %%
@@ -206,7 +206,7 @@ liq.update_data(df=df)
 
 # %%
 #save after each standard-experiment iteration
-liq.data.to_csv(liquid_name+'_BOTorch_exp3.csv', index = False)
+liq.data.to_csv(f'{liquid_name}_BOTorch_exp3.csv', index = False)
 
 # %%
 pipette.ejectTipAt(bin.wells['A1'].top)
@@ -241,5 +241,5 @@ density = 0.8736
 # Do not change
 liq = BO_LiqTransfer(liquid_name)
 folder = (r"C:\Users\admin\Documents\GitHub\viscosity_liquid_transfer_Pablo\Sartorious_experiments\Initialisation_Data")
-liq.data_from_csv(liquid_name+'_BOTorch_exp3.csv')
+liq.data_from_csv(f'{liquid_name}_BOTorch_exp3.csv')
 liq.data
