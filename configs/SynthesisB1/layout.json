@@ -9,22 +9,22 @@
 		"4":{
 			"name": "bin",
 			"exclusion_height": -1,
-			"filepath": "polylectric/library/labware/custom/pe_trash.json"
+			"filepath": "LiqTransferOptimizer/library/labware/custom/pe_trash.json"
 		},
 		"3": {
 			"name": "tip_rack",
 			"exclusion_height": -1,
-			"filepath": "polylectric/library/labware/custom/eppendorfmotion_96_tiprack_1000ul.json"
+			"filepath": "LiqTransferOptimizer/library/labware/custom/eppendorfmotion_96_tiprack_1000ul.json"
 		},
 		"1": {
 			"name": "balance",
 			"exclusion_height": -1,
-			"filepath": "polylectric/library/labware/custom/mass_balance_cosmetic_jar.json"
+			"filepath": "LiqTransferOptimizer/library/labware/custom/mass_balance_cosmetic_jar.json"
 		},
 		"2": {
 			"name": "jars",
 			"exclusion_height": -1,
-			"filepath": "polylectric/library/labware/custom/pe_6_cosmeticjar_1500ul.json"
+			"filepath": "LiqTransferOptimizer/library/labware/custom/pe_6_cosmeticjar_1500ul.json"
 		}
 	}
 }
