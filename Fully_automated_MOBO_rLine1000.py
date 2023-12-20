@@ -562,12 +562,8 @@ class BO_LiqTransfer:
 #Import robot related packages and run setup
 import pandas as pd
 import time
-from matplotlib import pyplot as plt
-from pathlib import Path
-import sys
-REPOS = 'GitHub'
-ROOT = str(Path().absolute()).split(REPOS)[0]
-sys.path.append(f'{ROOT}{REPOS}')
+
+from BO_liquid_transfer import BO_LiqTransfer       # shared class
 
 from configs.SynthesisB1 import SETUP, LAYOUT_FILE
 
