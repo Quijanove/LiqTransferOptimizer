@@ -151,6 +151,7 @@ class BO_LiqTransfer:
                             'delay_aspirate': 10,  
                             'delay_dispense': 10
                             }
+        self._pipette_brand = pipette_brand
 
     
     @property
@@ -274,6 +275,8 @@ class BO_LiqTransfer:
             - file_name (str) : Path of csv file
         """
         data = pd.read_csv(file_name)
+        if self._pipette_brand != 'rline':
+            data = data.loc[:,['liquid','pipette','volume','aspiration_rate','dispense_rate','blow_out_rate','delay_aspirate','delay_dispense','delay_blow_out','%error']]
         self.set_data(data)
 
     
