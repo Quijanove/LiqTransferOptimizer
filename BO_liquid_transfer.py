@@ -285,6 +285,7 @@ class BO_LiqTransfer:
             - volume (int) : Volume transfered in gravimetric test
         """
         self._latest_volume = volume
+        updated_data = pd.concat([self._data,self._data.iloc[[-1]]],ignore_index=True)
         last_measurement_data = self._data.iloc[-1].copy()
         last_measurement_data.loc[updated_data.last_valid_index(),'volume'] = self._latest_volume
         last_measurement_data.loc[updated_data.last_valid_index(),'aspiration_rate']  = self._latest_suggestion['aspiration_rate']
