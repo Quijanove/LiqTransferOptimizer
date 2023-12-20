@@ -293,8 +293,7 @@ class BO_LiqTransfer:
         last_measurement_data.loc[updated_data.last_valid_index(),'%error'] = error
         return last_measurement_data
     
-    @staticmethod
-    def calibration_summary(df):
+    def calibration_summary(self, df):
         """ 
         Returns a DataFrame object containing the summary of mean transfer errors, standard deviations,
         time to transfer 1000 µL and iteration of the tested parameters in the calibration procedure
