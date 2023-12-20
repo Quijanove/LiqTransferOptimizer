@@ -1,12 +1,12 @@
 # %%
 # basic dependencies
-
+from __future__ import annotations
 import numpy as np
-np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
-
 import pandas as pd
 import time
+from typing import Optional
 
+np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 
 ## To process mass data and fit sigmid curves in automated initialization experiments
 from scipy import signal
@@ -109,7 +109,7 @@ class BO_LiqTransfer:
     - calibrateParameters
     """
 
-    def __init__(self, liquid_name, density=None):
+    def __init__(self, liquid_name:str, density:Optional[float] = None, pipette_brand:str = 'rline'):
         """
         Instatiate the class
         Args:
@@ -196,7 +196,7 @@ class BO_LiqTransfer:
     
     ##Miscelaneous functions
 
-    def set_data(self,df):
+    def set_data(self, df:pd.DataFrame):
         """ 
         Selects columns in a dataframe that are also in property _data, calculates iteration, 
         time to aspirate 1000 µL and mean values for transfers using the same parameters that 
@@ -254,7 +254,7 @@ class BO_LiqTransfer:
         self._data = df_mean
  
 
-    def update_data(self,df):
+    def update_data(self, df:pd.DataFrame) -> pd.DataFrame:
         """ 
         Concatenates dataframe from one gravimetric test with existing data in _data and
         sets the concatenated dataframe to _data
@@ -267,7 +267,7 @@ class BO_LiqTransfer:
         return self._data
 
 
-    def data_from_csv(self,file_name):
+    def data_from_csv(self, file_name:str):
         """ 
         Loads a csv file and sets to _data
         Args:
@@ -277,7 +277,7 @@ class BO_LiqTransfer:
         self.set_data(data)
 
     
-    def df_last_measurement(self,error,volume= 1000):
+    def df_last_measurement(self, error:float, volume:float = 1000) -> pd.DataFrame:
         """ 
         Reaturns a DataFrame object containing the latest measured error for a gravimetric test
         Args:
@@ -293,7 +293,7 @@ class BO_LiqTransfer:
         last_measurement_data.loc[updated_data.last_valid_index(),'%error'] = error
         return last_measurement_data
     
-    def calibration_summary(self, df):
+    def calibration_summary(self, df:pd.DataFrame) -> pd.DataFrame:
         """ 
         Returns a DataFrame object containing the summary of mean transfer errors, standard deviations,
         time to transfer 1000 µL and iteration of the tested parameters in the calibration procedure
@@ -317,7 +317,7 @@ class BO_LiqTransfer:
         return df_summary_all 
 
     @staticmethod
-    def sigmoid(x, K ,x0, B,v,A):
+    def sigmoid(x:np.ndarray, K:float, x0:float, B:float, v:float, A:float) -> np.ndarray:
         """ 
         Returns a value based on the evaluation of a generalized logistic function
         Args:
@@ -333,7 +333,7 @@ class BO_LiqTransfer:
     
     #BO relevant functions                            
 
-    def xy_split(self):
+    def xy_split(self) -> tuple[np.ndarray, np.ndarray]:
         """ 
         Returns pandas.DataFrames for features (x) and objectives (y) from _data to 
         train a ML algorithm  
@@ -344,7 +344,7 @@ class BO_LiqTransfer:
         return x_train,y_train
 
 
-    def set_bounds(self, x_train):
+    def set_bounds(self, x_train:np.ndarray) -> torch.Tensor:
         """
         Set the bounds for the parametric space in terms 
         of attributes bmin and bmax
@@ -352,7 +352,7 @@ class BO_LiqTransfer:
         return torch.vstack([x_train[0]*self.bmin, x_train[0]*self.bmax])
 
 
-    def fit_surrogate(self):
+    def fit_surrogate(self) -> tuple[ModelListGP, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Returns a GPR model for each value in attribute objectives using each value
         of attribure features, a reference point for each objective, normalized 
@@ -381,7 +381,7 @@ class BO_LiqTransfer:
         return model1, ref_point, train_x_gp, problem_bounds
     
 
-    def optimized_suggestions(self, random_state= 42):
+    def optimized_suggestions(self, random_state:int = 42) -> pd.DataFrame:
         """
         Returns a dataframe witn the ten suggestions of features
         that the acquisituion function computed for most likely gain. 
@@ -425,7 +425,7 @@ class BO_LiqTransfer:
     
     ### Methods for controlling robotic platform
 
-    def cleanTip(self, well, repetitions =2 ):
+    def cleanTip(self, well, repetitions:int = 2):
         """
         Executes commands to clean pipette tip using 3 cycles of blowouts
         and plunger homing
@@ -457,7 +457,7 @@ class BO_LiqTransfer:
             time.sleep(5)
 
     
-    def gravimetric_transfer(self, volume, liquid_level, source_well,balance_well):
+    def gravimetric_transfer(self, volume:int, liquid_level:float, source_well, balance_well) -> tuple[float, pd.DataFrame]:
         """
         Executes commands for one gravimetric test of a combination of liquid 
         handling parameters defined by the property param_dict. 
@@ -532,7 +532,7 @@ class BO_LiqTransfer:
         
         return liquid_level, df
 
-    def obtainAproximateRate(self, initial_liquid_level_balance,balance_well,speed=265, file_name=None):
+    def obtainAproximateRate(self, initial_liquid_level_balance:float, balance_well, speed:float = 265, file_name:Optional[str]=None):
         """
         Executes commands to obtain first approximation of flow rate for optimization protocol.
         Sets _first_approximation property and saves file with the recorded mass/time data
@@ -609,7 +609,7 @@ class BO_LiqTransfer:
         self.platform.liquid.dispense(1000,speed= self._first_approximation)
 
 
-    def exploreBoundaries(self, initial_liquid_level_source,source_well,balance_well):
+    def exploreBoundaries(self, initial_liquid_level_source:float, source_well, balance_well):
         """
         Executes commands for 5 gravimetric test using a combination of liquid 
         handling parameters derived from the property first_approximation and 
@@ -680,7 +680,7 @@ class BO_LiqTransfer:
             counter += 1
 
 
-    def optimizeParameters(self, initial_liquid_level_source,source_well,balance_well,iterations=5,file_name=None):
+    def optimizeParameters(self, initial_liquid_level_source:float, source_well, balance_well, iterations:int = 5, file_name:Optional[str] = None):
         """
         Executes commands for n iterations of gravimetric test using a combination of liquid 
         handling parameters suggested by a BO algorithm. Each test is repeated for each
@@ -741,7 +741,7 @@ class BO_LiqTransfer:
             self._data.to_csv(file_name, index=False)
 
 
-    def calibrateParameters(self, initial_liquid_level_source,source_well,balance_well,iterations=10, file_name=None):
+    def calibrateParameters(self, initial_liquid_level_source:float, source_well, balance_well, iterations:int = 10, file_name:Optional[str] = None):
         """
         Executes commands for n iterations of gravimetric test using the best recorded 
         combination of liquid handling parameters in property data. 
