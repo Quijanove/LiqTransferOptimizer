@@ -110,7 +110,8 @@ class BO_LiqTransfer:
 
     def df_last_measurement(self,error,volume= 1000):
         self._latest_volume = volume
-        last_measurement_data = self._data.iloc[[-1].copy()
+        updated_data = pd.concat([self.data,self.data.iloc[[-1]]],ignore_index=True)
+        last_measurement_data = self._data.iloc[-1].copy()
         last_measurement_data.loc[updated_data.last_valid_index(),'volume'] = self._latest_volume
         last_measurement_data.loc[updated_data.last_valid_index(),'aspiration_rate']  = self._latest_suggestion['aspiration_rate']
         last_measurement_data.loc[updated_data.last_valid_index(),'dispense_rate']  = self._latest_suggestion['dispense_rate']
