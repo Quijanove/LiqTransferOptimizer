@@ -48,7 +48,14 @@ import warnings
 warnings.filterwarnings('ignore', category=BadInitialCandidatesWarning)
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
+###########
 
+# Platform configs
+from pathlib import Path
+import sys
+REPO = 'LiqTransferOptimizer'
+ROOT = str(Path().absolute()).split(REPO)[0]
+sys.path.append(f'{ROOT}{REPO}')
 
 # %%
 class BO_LiqTransfer:
