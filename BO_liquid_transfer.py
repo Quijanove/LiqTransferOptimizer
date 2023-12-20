@@ -317,7 +317,7 @@ class BO_LiqTransfer:
         return df_summary_all 
 
     @staticmethod
-    def sigmoid(self,x, K ,x0, B,v,A):
+    def sigmoid(x, K ,x0, B,v,A):
         """ 
         Returns a value based on the evaluation of a generalized logistic function
         Args:
