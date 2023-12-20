@@ -202,11 +202,13 @@ class BO_LiqTransfer:
     
     
 # %%
+from BO_liquid_transfer import BO_LiqTransfer       # shared class
+
 # Change according to experiment
 liquid_name = 'Viscosity_std_1275' 
 
 # Do not change
-liq = BO_LiqTransfer(liquid_name)
+liq = BO_LiqTransfer(liquid_name, pipette_brand='ot2')
 liq.data_from_csv('C:\\Users\\amdm_\\OneDrive\\Documents\\GitHub\\viscosity_liquid_transfer_Pablo\\Opentrons_experiments\\BOTorch_optimization\\VS_code_csv\\Viscosity_std_1275_3_vol_opt_more_trials_final_changed_bounds_correct.csv')
 liq._data
 
@@ -215,7 +217,8 @@ liq.optimized_suggestions()
 
 # %%
 volume= 300
-liq.update_data(-0.840723	,volume)
+last_measurement_data = liq.df_last_measurement(-0.840723, volume)
+liq.update_data(last_measurement_data)
 
 # %%
 #save after each standard-experiment iteration
