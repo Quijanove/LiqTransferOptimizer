@@ -1,14 +1,7 @@
 # %%
 # basic dependencies
-
 import numpy as np
-from numpy import loadtxt
-from numpy import savetxt
-
 import pandas as pd
-import math
-import time
-from datetime import date
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 
@@ -25,7 +18,6 @@ torch.set_printoptions(precision=3)
 ###########
 
 # botorch dependencies
-import botorch
 
 # data related
 from botorch.utils.sampling import draw_sobol_samples
@@ -43,28 +35,17 @@ from botorch.acquisition.multi_objective.objective import IdentityMCMultiOutputO
 from botorch.acquisition.multi_objective.monte_carlo import qNoisyExpectedHypervolumeImprovement
 
 # utilities
-from botorch.optim.optimize import optimize_acqf
 from botorch.sampling import SobolQMCNormalSampler
-from botorch.utils.multi_objective.pareto import is_non_dominated
-from botorch.utils.multi_objective.hypervolume import Hypervolume
-from typing import Optional
-from torch import Tensor
 from botorch.exceptions import BadInitialCandidatesWarning
-
-from gpytorch.constraints import GreaterThan
-from torch.optim import SGD
-from gpytorch.mlls import ExactMarginalLogLikelihood
 
 import warnings
 
 warnings.filterwarnings('ignore', category=BadInitialCandidatesWarning)
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
-
 # plotting dependencies
-import matplotlib
 from matplotlib import pyplot as plt
-%matplotlib inline
+# %matplotlib inline
 
 SMALL_SIZE = 14
 MEDIUM_SIZE = 18
