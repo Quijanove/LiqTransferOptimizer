@@ -8,7 +8,7 @@ setup:
         module: Move
         class: Jointed.Dobot.M1Pro
         settings:
-          ip_address: '192.168.2.21'
+          ip_address: '192.109.209.21'
           home_coordinates: {'tuple': [300,0,200]}
           home_orientation: {'tuple': [10,0,0]}
           orientate_matrix: {'array': [[0.015426152906427654,0.9998810098239228,0],[-0.9998810098239228,0.015426152906427654,0],[0,0,1]]}
@@ -19,7 +19,7 @@ setup:
         module: Transfer
         class: Liquid.Sartorius.Sartorius
         settings:
-          port: __sartorius_01__
+          port: 'COM8'
           channel: 1
           offset: [0,0,0]
 
@@ -27,14 +27,8 @@ balance:
   module: Measure
   class: Physical.MassBalance
   settings:
-    port: __balance_01__
+    port: 'COM4'
     calibration_factor: 6.862879436681862
-
-camera:
-  module: View
-  class: Optical.Optical
-  settings:
-    cam_index: __arducam__
 
 SHORTCUTS:
   mover: setup.mover
