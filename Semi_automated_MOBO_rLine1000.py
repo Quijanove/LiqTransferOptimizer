@@ -203,7 +203,7 @@ REPOS = 'GitHub'
 ROOT = str(Path().absolute()).split(REPOS)[0]
 sys.path.append(f'{ROOT}{REPOS}')
 
-from polylectric.configs.SynthesisB1 import SETUP, LAYOUT_FILE
+from configs.SynthesisB1 import SETUP, LAYOUT_FILE
 
 from controllably import load_deck      # optional
 load_deck(SETUP.setup, LAYOUT_FILE)     # optional
