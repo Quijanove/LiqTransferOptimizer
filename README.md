@@ -14,3 +14,6 @@ The notebook MOBO_liquid_handling_paramters.ipynb has three examples of differen
 2) BO_LiqTransfer implemented to optimize the transfer paramters of an Sartorius rLine1000 pipette in an in-house assembled automated liquid handling platform through a semi-automated method. The method requires an experimenter to run the code required for the initialization step. The method requires a liquid handling platform with an automated mass balance and with a computer with botorch and controllably packages installed.The code to control the platform can be reused by integrating the code control the automated platform with the controllably framework.
    
 3)  BO_LiqTransfer implemented to optimize the transfer paramters of an Sartorius rLine1000 pipette through a fully automated protocol using an in-house assembled liquid handling platform. The method requires a liquid handling platform with an automated mass balance and with a computer with botorch and controllably packages installed. The code to control the platform can be reused by integrating the code control the automated platform with the controllably framework.
+
+## Supporting information from *insert publication*
+The data collected during the experiments and the code to prepare the graphs presented in the publication x can be found in y. 
