@@ -101,12 +101,15 @@ class BO_LiqTransfer:
     - optimized_suggestions: Surrogate functions are sampled and likely gain is calculated by acquisition function
 
     ## Robotic platform control
-    - cleanTip: 
-    - gravimetric_transfer
-    - obtainAproximateRate
-    - exploreBoundaries
-    - optimizeParameters
-    - calibrateParameters
+    - cleanTip: Executes commands for the pipetting platform to perform 3 series of pipette blow out into a well.
+    - gravimetric_transfer: Executes commands for the pipetting platform to perform 1 gravimetric test of a liquid transfer
+    - obtainAproximateRate: Exectues commands for the pipetting platform to estimate the liquid flow rate within the pipette tip
+    - exploreBoundaries: Executes commands for the pipetting platform to perform five gravimetric transfers that use aspiration and dispense rates 
+                        found at the boundary of the parametric space.
+    - optimizeParameters: Executes commands for the pipetting platform to perform gravimetric transfers using aspiration
+                        and dispense rates obtained through Bayesian optimization
+    - calibrateParameters: Executes commands for the pipetting platform to perform gravimetric transfers using the 
+                            aspiration and dispense rates with the best accuracy. 
     """
 
     def __init__(self, liquid_name:str, density:Optional[float] = None, pipette_brand:str = 'rline'):
@@ -208,7 +211,7 @@ class BO_LiqTransfer:
             performed during an optimization
         """
        
-        df = df.loc[:,self._data.columns()].copy()
+        df = df.loc[:,self._data.columns].copy()
         nan_columns = df.columns.to_list()
         nan_columns = [column for column in nan_columns if column not in ('liquid',
         'pipette',
@@ -624,8 +627,7 @@ class BO_LiqTransfer:
             is stored
             - balance_well (labware.well) : Well of labware placed on top of automated mass balance
         """
-        self.platform.mover.setSpeed(50)
-        self.platform.mover.setHandedness(False)
+
 
         if type(self._data) == None:
             df = pd.DataFrame(columns = ['liquid', 'pipette', 'volume', 'aspiration_rate', 'dispense_rate', 'delay_aspirate', 'delay_dispense','iteration','liquid_level','density', 'time', 'm', '%error','time_asp_1000','acq_value'])
@@ -696,8 +698,7 @@ class BO_LiqTransfer:
             - iterations (int) : Number of optimization iterations
             - file_name (str, optional) : Path to save the values recorded in property data during the optimization
         """
-        self.platform.mover.setSpeed(50)
-        self.platform.mover.setHandedness(False)
+
 
         liquid_level = initial_liquid_level_source
 
@@ -758,9 +759,6 @@ class BO_LiqTransfer:
             - file_name (str, optional) : Path to save csv with the values recorded during calibration 
             and the statistical summary
         """
-
-        self.platform.mover.setSpeed(50)
-        self.platform.mover.setHandedness(False)
 
         liquid_level = initial_liquid_level_source
 
