@@ -8,7 +8,7 @@ from typing import Optional
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 
-## To process mass data and fit sigmid curves in automated initialization experiments
+## To process mass data and fit sigmoid curves in automated initialization experiments
 from scipy import signal
 from scipy.optimize import curve_fit
 
@@ -60,7 +60,7 @@ sys.path.append(f'{ROOT}{REPO}')
 # %%
 class BO_LiqTransfer:
     """
-    BO_LiqTransfer provides methods to perform Bayesian Optimization of liquid handling paramters of pipetting robots to transfer viscous liquids 
+    BO_LiqTransfer provides methods to perform Bayesian Optimization of liquid handling parameters of pipetting robots to transfer viscous liquids 
 
     ### Constructor
     Args:
@@ -68,29 +68,29 @@ class BO_LiqTransfer:
         `density` (float, Optional): Density of the target liquid.
     
     ### Attributes
-    - 'features' (list): Column names from _data othat will be used as features for the optimization
-    - 'objectives' (list): Column names from _data othat will be used as objectives for the optimization
+    - 'features' (list): Column names from _data that will be used as features for the optimization
+    - 'objectives' (list): Column names from _data that will be used as objectives for the optimization
     - 'bmax' (float): Factor that scales initial flow rate rate to maximum value 
     - 'bmin' (float): Factor that scales initial flow rate rate to minimum value 
     - 'mean_volumes' (list): List of volumes that will be used for optimization 
     - 'platform' (device): Object pointing to automated equipment used during optimization
     
     ### Properties (with setter)
-    - '_data' (DataFrame): Dataframe containing the data relevant to the experiments
-    - '_param_dict' (dict): Dictionary containing the liquid handling paramters of the autoamted pipette
+    - '_data' (DataFrame): DataFrame containing the data relevant to the experiments
+    - '_param_dict' (dict): Dictionary containing the liquid handling parameters of the autoamated pipette
     - '_first_approximation' (float): Float value containing the approximated flow rate obtained in the first step of the optimization
 
     ### Properties (no setter)
-    - '_latest_suggestion' (DataFrame): Dataframe containing the latest feature suggestions by the BO algorithm 
-    - '_latest_volume' (int): Value of the latest volume transfered during the optimization
+    - '_latest_suggestion' (DataFrame): DataFrame containing the latest feature suggestions by the BO algorithm 
+    - '_latest_volume' (int): Value of the latest volume transferred during the optimization
     - '_latest_acq_value' (float): Value of the latest suggestion acquisition value
     
     ### Methods
-    ## Miscelaneous 
-    - set_data: Takes a dataframe calculates mean values of transfers and time to aspirate a 1000, and updates  property _data
-    - update_data: Concatenates the dataframe obtained during the last measurment with the previous data, then it sets to property _data 
+    ## Miscellaneous 
+    - set_data: Takes a DataFrame calculates mean values of transfers and time to aspirate a 1000, and updates  property _data
+    - update_data: Concatenates the DataFrame obtained during the last measurement with the previous data, then it sets to property _data 
     - data_from_csv: Loads data from a csv file path and sets to property _data.
-    - df_last_measurement: Creates a dataframe with the values from the last measurement. 
+    - df_last_measurement: Creates a DataFrame with the values from the last measurement. 
     - calibration_summary: Calculates statistics from calibration experiment
     - sigmoid: Defines sigmoid function used during mass balance controlled approximation of liquid flow in pipette tip.
     
@@ -103,7 +103,7 @@ class BO_LiqTransfer:
     ## Robotic platform control
     - cleanTip: Executes commands for the pipetting platform to perform 3 series of pipette blow out into a well.
     - gravimetric_transfer: Executes commands for the pipetting platform to perform 1 gravimetric test of a liquid transfer
-    - obtainAproximateRate: Exectues commands for the pipetting platform to estimate the liquid flow rate within the pipette tip
+    - obtainAproximateRate: Executes commands for the pipetting platform to estimate the liquid flow rate within the pipette tip
     - exploreBoundaries: Executes commands for the pipetting platform to perform five gravimetric transfers that use aspiration and dispense rates 
                         found at the boundary of the parametric space.
     - optimizeParameters: Executes commands for the pipetting platform to perform gravimetric transfers using aspiration
@@ -114,9 +114,9 @@ class BO_LiqTransfer:
 
     def __init__(self, liquid_name:str, density:Optional[float] = None, pipette_brand:str = 'rline'):
         """
-        Instatiate the class
+        Instantiate the class
         Args:
-            - liquid_nmae (str): Name of the target liquid that require liquid handling 
+            - liquid_name (str): Name of the target liquid that require liquid handling 
             optimization
             - density (float): Density of the target liquid
         """
@@ -198,16 +198,16 @@ class BO_LiqTransfer:
                 print('parameter is not in param_dict')
     
     
-    ##Miscelaneous functions
+    ##Miscellaneous functions
 
     def set_data(self, df:pd.DataFrame):
         """ 
-        Selects columns in a dataframe that are also in property _data, calculates iteration, 
+        Selects columns in a DataFrame that are also in property _data, calculates iteration, 
         time to aspirate 1000 µL and mean values for transfers using the same parameters that 
         have been performed for all values in attribute mean_volumes 
 
         Args:
-            - df (pandas.DataFrame) : Dataframe containing the data of the gravimmetric tests
+            - df (pandas.DataFrame) : DataFrame containing the data of the gravimetric tests
             performed during an optimization
         """
        
@@ -260,10 +260,10 @@ class BO_LiqTransfer:
 
     def update_data(self, df:pd.DataFrame) -> pd.DataFrame:
         """ 
-        Concatenates dataframe from one gravimetric test with existing data in _data and
-        sets the concatenated dataframe to _data
+        Concatenates DataFrame from one gravimetric test with existing data in _data and
+        sets the concatenated DataFrame to _data
         Args:
-            - df (pandas.DataFrame) : Dataframe containing the data of one gravimetric test
+            - df (pandas.DataFrame) : DataFrame containing the data of one gravimetric test
         """
         self._latest_volume = df['volume'].iloc[-1]
         updated_data = pd.concat([self._data,df],ignore_index=True)
@@ -285,10 +285,10 @@ class BO_LiqTransfer:
     
     def df_last_measurement(self, error:float, volume:float = 1000) -> pd.DataFrame:
         """ 
-        Reaturns a DataFrame object containing the latest measured error for a gravimetric test
+        Returns a DataFrame object containing the latest measured error for a gravimetric test
         Args:
             - error (float) : value of relative error of transfer from gravimetric test
-            - volume (int) : Volume transfered in gravimetric test
+            - volume (int) : Volume transferred in gravimetric test
         """
         self._latest_volume = volume
         updated_data = pd.concat([self._data,self._data.iloc[[-1]]],ignore_index=True)
@@ -304,12 +304,12 @@ class BO_LiqTransfer:
         Returns a DataFrame object containing the summary of mean transfer errors, standard deviations,
         time to transfer 1000 µL and iteration of the tested parameters in the calibration procedure
         Args:
-            - df (pandas.DataFrame) : Dataframe containing values of the gravimetric tests perfored 
+            - df (pandas.DataFrame) : DataFrame containing values of the gravimetric tests performed 
             during calibration test of 
         """
-        if 'volume_transfered' and 'volume_error' and 'time_asp_1000' not in df.columns:
-            df['volume_transfered'] = (df['m']/df['density'])*1000
-            df['volume_error'] = df['volume_transfered'] - df['volume']
+        if 'volume_transferred' and 'volume_error' and 'time_asp_1000' not in df.columns:
+            df['volume_transferred'] = (df['m']/df['density'])*1000
+            df['volume_error'] = df['volume_transferred'] - df['volume']
             df['time_asp_1000']=1000/df['aspiration_rate'] + 1000/df['dispense_rate'] + df['delay_aspirate'] + df['delay_dispense']             
 
         df_summary_all = pd.DataFrame()
@@ -317,7 +317,7 @@ class BO_LiqTransfer:
         for volume in self.mean_volumes:
             df_experiment_v = df.where(df['volume'] == volume).dropna(how='all')
             df_summary = pd.DataFrame(columns = (f'Mean transfer volume for {volume} µL [µL]', f'Mean transfer volume error of {volume} µL [µL]', f'Mean relative error for transfer of {volume} µL [%]', f'Standard deviation for transfer of {volume} µL [µL]', f'Relative standard deviation for transfer of {volume} µL [%]') )
-            data = [df_experiment_v['volume_transfered'].mean(), df_experiment_v['volume_error'].mean(), df_experiment_v['%error'].mean(), df_experiment_v['volume_transfered'].std(), (df_experiment_v['volume_transfered'].std() / df_experiment_v['volume_transfered'].mean() * 100)]
+            data = [df_experiment_v['volume_transferred'].mean(), df_experiment_v['volume_error'].mean(), df_experiment_v['%error'].mean(), df_experiment_v['volume_transferred'].std(), (df_experiment_v['volume_transferred'].std() / df_experiment_v['volume_transferred'].mean() * 100)]
             df_summary.loc[df['liquid'].iloc[0]] = data
             df_summary_all = pd.concat([df_summary_all, df_summary], axis = 1)
         return df_summary_all 
@@ -332,7 +332,7 @@ class BO_LiqTransfer:
             - A (float) : Lower asymptote
             - x0 (float) : Starting value for a series of x
             - B (float) : Growth constant
-            - v (float) : Assymetry factor
+            - v (float) : Asymmetry factor
         """
         y = (K-A) / (1 + np.exp(B*(x-x0)))**(1/v) + A
         return y
@@ -361,7 +361,7 @@ class BO_LiqTransfer:
     def fit_surrogate(self) -> tuple[ModelListGP, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Returns a GPR model for each value in attribute objectives using each value
-        of attribure features, a reference point for each objective, normalized 
+        of attribute features, a reference point for each objective, normalized 
         training data and the bounds of the parametric space 
         """
         x_train, y_train = self.xy_split()
@@ -389,10 +389,10 @@ class BO_LiqTransfer:
 
     def optimized_suggestions(self, random_state:int = 42) -> pd.DataFrame:
         """
-        Returns a dataframe witn the ten suggestions of features
-        that the acquisituion function computed for most likely gain. 
-        Sets _latest_acq_value and _latest_suggestion using the top sugestions
-        of the dataframe
+        Returns a DataFrame with the ten suggestions of features
+        that the DataFrame function computed for most likely gain. 
+        Sets _latest_acq_value and _latest_suggestion using the top suggestions
+        of the DataFrame
         """
         if random_state != None:
             torch.manual_seed(random_state) 
@@ -467,7 +467,7 @@ class BO_LiqTransfer:
         """
         Executes commands for one gravimetric test of a combination of liquid 
         handling parameters defined by the property param_dict. 
-        Returns updated liquid level and a dataframe containing data from transfer
+        Returns updated liquid level and a DataFrame containing data from transfer
         Args:
             - volume (int) : Target volume for transfer
             - liquid_level (float) : Height of liquid column in source well
@@ -515,7 +515,7 @@ class BO_LiqTransfer:
         #change liquid levels
         liquid_level = liquid_level - 2*m/self.density   
         
-        #making new dataframe + filling it in
+        #making new DataFrame + filling it in
         df = pd.DataFrame(columns=self._data.columns)            
         
         df = pd.concat([df,pd.DataFrame({
@@ -619,7 +619,7 @@ class BO_LiqTransfer:
         """
         Executes commands for 5 gravimetric test using a combination of liquid 
         handling parameters derived from the property first_approximation and 
-        attributes bmin, bmax. Each combination of liquid handling paramters gravimetric 
+        attributes bmin, bmax. Each combination of liquid handling parameters gravimetric 
         test is repeated for eac value of attribute mean volumes
         Args
             - initial_liquid_level_source (float) : Height of liquid column in source well
@@ -810,8 +810,8 @@ class BO_LiqTransfer:
             if (liquid_level > initial_liquid_level_source) or (liquid_level < 6): 
                 break
         
-        calibration_df['volume_transfered'] = calibration_df['m']/calibration_df['density']*1000
-        calibration_df['volume_error'] = calibration_df['volume_transfered'] - calibration_df['volume']
+        calibration_df['volume_transferred'] = calibration_df['m']/calibration_df['density']*1000
+        calibration_df['volume_error'] = calibration_df['volume_transferred'] - calibration_df['volume']
         calibration_df['time_asp_1000'] = 1000/calibration_df['aspiration_rate'] + 1000/calibration_df['dispense_rate'] + calibration_df['delay_aspirate'] + calibration_df['delay_dispense']       
         
         calibration_summary_df= self.calibration_summary(calibration_df)
