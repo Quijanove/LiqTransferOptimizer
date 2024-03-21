@@ -1,0 +1,9 @@
+numpy
+pandas
+torch
+botorch
+warnings
+pathlib
+sys
+opentrons
+plotly
