@@ -1,0 +1,9 @@
+botorch==0.9.5
+control-lab-ly==1.3.0
+gpytorch==1.11
+matplotlib==3.8.2
+numpy==1.26.2
+opentrons==7.0.2
+pandas==2.1.4
+scipy==1.11.4
+torch==2.1.2
