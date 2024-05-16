@@ -1,0 +1,60 @@
+{
+    "ordering": [
+        [
+            "A1"
+        ]
+    ],
+    "brand": {
+        "brand": "AMDM",
+        "brandId": [
+            "amdm_balance_vial_40000"
+        ]
+    },
+    "metadata": {
+        "displayName": "AMDM Mass Balance 40000",
+        "displayCategory": "wellPlate",
+        "displayVolumeUnits": "µL",
+        "tags": []
+    },
+    "dimensions": {
+        "xDimension": 127.4,
+        "yDimension": 85,
+        "zDimension": 149.5
+    },
+    "wells": {
+        "A1": {
+            "depth": 94,
+            "totalLiquidVolume": 15000,
+            "shape": "circular",
+            "diameter": 16.9,
+            "x": 74,
+            "y": 42.5,
+            "z": 55.5
+        }
+    },
+    "groups": [
+        {
+            "metadata": {
+                "wellBottomShape": "flat"
+            },
+            "wells": [
+                "A1"
+            ]
+        }
+    ],
+    "parameters": {
+        "format": "irregular",
+        "quirks": [],
+        "isTiprack": false,
+        "isMagneticModuleCompatible": false,
+        "loadName": "mass_balance_vial_40000"
+    },
+    "namespace": "custom_beta",
+    "version": 1,
+    "schemaVersion": 2,
+    "cornerOffsetFromSlot": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    }
+}
