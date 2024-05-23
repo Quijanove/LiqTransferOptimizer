@@ -73,12 +73,16 @@ class BO_LiqTransfer:
     - 'bmax' (float): Factor that scales initial flow rate rate to maximum value 
     - 'bmin' (float): Factor that scales initial flow rate rate to minimum value 
     - 'mean_volumes' (list): List of volumes that will be used for optimization 
-    - 'platform' (device): Object pointing to automated equipment used during optimization
+    
     
     ### Properties (with setter)
     - '_data' (DataFrame): DataFrame containing the data relevant to the experiments
-    - '_param_dict' (dict): Dictionary containing the liquid handling parameters of the autoamated pipette
+    - '_param_dict' (dict): Dictionary containing the liquid handling parameters of the automated pipette
     - '_first_approximation' (float): Float value containing the approximated flow rate obtained in the first step of the optimization
+    - 'platform' (device): Object pointing to automated platform used during optimization, should contain objects to control mass balance and 
+    pipetting robot.
+    - 'pipetteRobot' (device): Object pointing to pipetting Robot equipment used during optimization.
+    - 'massBalance' (device): Object pointing to mass balance  equipment used during optimization.
 
     ### Properties (no setter)
     - '_latest_suggestion' (DataFrame): DataFrame containing the latest feature suggestions by the BO algorithm 
@@ -128,7 +132,10 @@ class BO_LiqTransfer:
         self.bmax = 1.25
         self.bmin = 0.1
         self.mean_volumes = [1000,500,300]
-        self.platform = None
+        self._platform = None
+        self.massBalance = None
+        self.pipetteRobot = None
+
         self._data = pd.DataFrame(columns = ['liquid', 
                                              'pipette', 
                                              'volume', 
@@ -156,7 +163,39 @@ class BO_LiqTransfer:
                             }
         self._pipette_brand = pipette_brand
 
+     
     
+    @property
+    def platform(self):
+        return self._platform
+    
+    @platform.setter
+    def platform(self, setup):
+        if str(type(setup)) != "<class 'controllably.misc.misc_utils.Setup'>":
+            raise Exception('This is not a controllably.misc.misc_utils.Setup object.')
+
+        for object in list(setup._asdict().values()):
+            if object.__class__.__name__ == "LiquidMoverSetup":
+                self.pipetteRobot = object
+
+            if object.__class__.__name__ == "MassBalance":
+                self.massBalance = object
+
+        if self.pipetteRobot == None:
+            print("""Setup Object assigned to self._platform does not contain a LiquidMoverSetup object.
+                Please load a LiquidMoverSetup object using the self.pipetteRobot before starting optimization""")
+            
+        elif self.massBalance == None:
+            print("""Setup Object assigned to self._platform does not contain a MassBalance object.
+                Please load a MassBalance object using the self.massBalance  before starting optimization""")
+
+        elif (self.massBalance == None and self.pipetteRobot == None): 
+            print("""Setup Object assigned to self._platform does not contain a LiquidMoverSetup or a MassBalance object.
+                Please load a a LiquidMoverSetup and MassBalance object using the self.pipetteRobot and self.massBalance before starting optimization""")    
+        else:
+            print(self.pipetteRobot)
+            print(self.massBalance)
+
     @property
     def data(self):
         return self._data
