@@ -565,7 +565,7 @@ import time
 
 from BO_liquid_transfer import BO_LiqTransfer       # shared class
 
-from configs.SynthesisB1 import SETUP, LAYOUT_FILE
+from configs.Platform import SETUP, LAYOUT_FILE
 
 from controllably import load_deck      # optional
 load_deck(SETUP.setup, LAYOUT_FILE)     # optional

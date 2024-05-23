@@ -5,7 +5,7 @@ import time
 from matplotlib import pyplot as plt
 from init import ClosedLoop_BO_LiqTransfer
 
-from configs.SynthesisB1 import SETUP, LAYOUT_FILE
+from configs.Platform import SETUP, LAYOUT_FILE
 
 from controllably import load_deck      # optional
 load_deck(SETUP.setup, LAYOUT_FILE)     # optional
