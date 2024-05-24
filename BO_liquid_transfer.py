@@ -480,25 +480,25 @@ class BO_LiqTransfer:
             - repetitions (int) : Number of repetitions for the clean tip procedure
         """
         
-        self.platform.mover.safeMoveTo(well.top)
+        self.pipetteRobot.mover.safeMoveTo(well.top)
         
         for i in range(repetitions):
-            self.platform.liquid.blowout(home=False) 
+            self.pipetteRobot.liquid.blowout(home=False) 
             time.sleep(5)
-            self.platform.liquid.home()
-            self.platform.setup.touchTip(well)
-            time.sleep(5)
-
-            self.platform.liquid.blowout(home=False) 
-            time.sleep(5)
-            self.platform.liquid.home()
-            self.platform.setup.touchTip(well)
+            self.pipetteRobot.liquid.home()
+            self.pipetteRobot.touchTip(well)
             time.sleep(5)
 
-            self.platform.liquid.blowout(home=False) 
+            self.pipetteRobot.liquid.blowout(home=False) 
             time.sleep(5)
-            self.platform.liquid.home()
-            self.platform.setup.touchTip(well)
+            self.pipetteRobot.liquid.home()
+            self.pipetteRobot.touchTip(well)
+            time.sleep(5)
+
+            self.pipetteRobot.liquid.blowout(home=False) 
+            time.sleep(5)
+            self.pipetteRobot.liquid.home()
+            self.pipetteRobot.touchTip(well)
             time.sleep(5)
 
     
@@ -519,28 +519,28 @@ class BO_LiqTransfer:
         start = time.time() 
 
         #aspirate step
-        self.platform.mover.safeMoveTo(source_well.from_bottom((0,0,liquid_level-5))) 
-        self.platform.liquid.aspirate(volume, speed=self._param_dict['aspiration_rate'] )
+        self.pipetteRobot.mover.safeMoveTo(source_well.from_bottom((0,0,liquid_level-5))) 
+        self.pipetteRobot.liquid.aspirate(volume, speed=self._param_dict['aspiration_rate'] )
         time.sleep(self._param_dict['delay_aspirate'])
 
-        self.platform.setup.touchTip(source_well) 
+        self.pipetteRobot.touchTip(source_well) 
 
         #dispense step
-        self.platform.mover.safeMoveTo(balance_well.from_top((0,0,-5))) 
-        self.platform.balance.tare() 
-        self.platform.balance.clearCache() 
-        self.platform.balance.toggleRecord(True) 
+        self.pipetteRobot.mover.safeMoveTo(balance_well.from_top((0,0,-5))) 
+        self.massBalance.tare() 
+        self.massBalance.clearCache() 
+        self.massBalance.toggleRecord(True) 
         time.sleep(5)
-        self.platform.liquid.dispense(volume,speed=self._param_dict['dispense_rate'] )
+        self.pipetteRobot.liquid.dispense(volume,speed=self._param_dict['dispense_rate'] )
         time.sleep(self._param_dict['delay_dispense'])
 
         #transfer termination
         finish = time.time() 
         time_m = finish - start
 
-        self.platform.mover.safeMoveTo(source_well.top) 
+        self.pipetteRobot.mover.safeMoveTo(source_well.top) 
         time.sleep(5)
-        self.platform.balance.toggleRecord(False) 
+        self.massBalance.toggleRecord(False) 
 
         #do blowout
         
@@ -548,7 +548,7 @@ class BO_LiqTransfer:
 
         #record transfer values 
         #calculating mass error functions
-        m = (self.platform.balance.buffer_df.iloc[-10:,-1].mean()-self.platform.balance.buffer_df.iloc[:10,-1].mean())/1000 
+        m = (self.massBalance.buffer_df.iloc[-10:,-1].mean()-self.massBalance.buffer_df.iloc[:10,-1].mean())/1000 
         error = (m-self.density*volume/1000)/(self.density/1000*volume)*100
         
         #change liquid levels
@@ -589,31 +589,31 @@ class BO_LiqTransfer:
         """
         liquid_level = initial_liquid_level_balance
         
-        if self.platform.liquid.isTipOn()== False:
-            self.platform.setup.attachTip()
+        if self.pipetteRobot.liquid.isTipOn()== False:
+            self.pipetteRobot.attachTip()
         
-        self.platform.mover.safeMoveTo(balance_well.from_bottom((0,0,liquid_level-5)),descent_speed_fraction=0.25)
+        self.pipetteRobot.mover.safeMoveTo(balance_well.from_bottom((0,0,liquid_level-5)),descent_speed_fraction=0.25)
         #Starting balance measurement
         time.sleep(5)
-        self.platform.balance.zero(wait=5)
-        self.platform.balance.clearCache()
-        self.platform.balance.toggleRecord(on=True)
+        self.massBalance.zero(wait=5)
+        self.massBalance.clearCache()
+        self.massBalance.toggleRecord(on=True)
         time.sleep(15)
 
-        self.platform.liquid.aspirate(1000, speed=speed)
+        self.pipetteRobot.liquid.aspirate(1000, speed=speed)
 
         #Switching the balance off after change in mass is less than 0.05
         while True:
-            data = self.platform.balance.buffer_df
+            data = self.massBalance.buffer_df
             data['Mass_smooth']= signal.savgol_filter(data['Mass'],91,1)
             data['Mass_derivative_smooth']=data['Mass_smooth'].diff()
             condition=data['Mass_derivative_smooth'].rolling(30).mean().iloc[-1]
             if condition>-0.05:
                 break
         print('loop stopped')
-        self.platform.balance.toggleRecord(on=False)
+        self.massBalance.toggleRecord(on=False)
 
-        self.platform.mover.moveTo(balance_well.from_top((0,0,-5)))
+        self.pipetteRobot.mover.moveTo(balance_well.from_top((0,0,-5)))
 
 
         #using data from balance buffer_df above, calculate time in seconds and mass derivatives
@@ -651,7 +651,7 @@ class BO_LiqTransfer:
         if file_name != None:
             data_fit.to_csv(file_name, index=False)
 
-        self.platform.liquid.dispense(1000,speed= self._first_approximation)
+        self.pipetteRobot.liquid.dispense(1000,speed= self._first_approximation)
 
 
     def exploreBoundaries(self, initial_liquid_level_source:float, source_well, balance_well):
@@ -676,8 +676,8 @@ class BO_LiqTransfer:
         liquid_level = initial_liquid_level_source
 
         #Check if new tip is required
-        if self.platform.liquid.isTipOn()== False:
-            self.platform.setup.attachTip()
+        if self.pipetteRobot.liquid.isTipOn()== False:
+            self.pipetteRobot.attachTip()
 
         volumes_list = self.mean_volumes
         
@@ -742,8 +742,8 @@ class BO_LiqTransfer:
         liquid_level = initial_liquid_level_source
 
         #Check if new tip is required
-        if self.platform.liquid.isTipOn()== False:
-            self.platform.setup.attachTip()
+        if self.pipetteRobot.liquid.isTipOn()== False:
+            self.pipetteRobot.attachTip()
 
         volumes_list = self.mean_volumes
         
@@ -802,8 +802,8 @@ class BO_LiqTransfer:
         liquid_level = initial_liquid_level_source
 
         # Check if new tip is required
-        if self.platform.liquid.isTipOn()== False:
-            self.platform.setup.attachTip()
+        if self.pipetteRobot.liquid.isTipOn()== False:
+            self.pipetteRobot.attachTip()
 
         volumes_list = self.mean_volumes
         
