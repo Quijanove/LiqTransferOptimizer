@@ -470,13 +470,14 @@ class BO_LiqTransfer:
     
     ### Methods for controlling robotic platform
 
-    def cleanTip(self, well, repetitions:int = 2):
+    def cleanTip(self, well, speed_factor:float = 0.2, repetitions:int = 9):
         """
-        Executes commands to clean pipette tip using 3 cycles of blowouts
+        Executes commands to clean pipette tip using a cycles of blowouts
         and plunger homing
         Args:
             - well (labware.well) : Well of labware where the clean tip procedure 
             will be performed
+            - 
             - repetitions (int) : Number of repetitions for the clean tip procedure
         """
         
@@ -486,19 +487,7 @@ class BO_LiqTransfer:
             self.pipetteRobot.liquid.blowout(home=False) 
             time.sleep(5)
             self.pipetteRobot.liquid.home()
-            self.pipetteRobot.touchTip(well)
-            time.sleep(5)
-
-            self.pipetteRobot.liquid.blowout(home=False) 
-            time.sleep(5)
-            self.pipetteRobot.liquid.home()
-            self.pipetteRobot.touchTip(well)
-            time.sleep(5)
-
-            self.pipetteRobot.liquid.blowout(home=False) 
-            time.sleep(5)
-            self.pipetteRobot.liquid.home()
-            self.pipetteRobot.touchTip(well)
+            self.pipetteRobot.touchTip(well,speed_factor = speed_factor)
             time.sleep(5)
 
     
