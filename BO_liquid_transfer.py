@@ -702,13 +702,16 @@ class BO_LiqTransfer:
 
                 self.set_data(pd.concat([self._data,df]).reset_index(drop=True))
                 #printing checks
-                print("LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(1.2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
+                print("LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
 
                 #liquid level checks
-                if (1.2*m/self.density > 1.2) or (1.2*m/self.density < 0):
+                if  (m/(volume*self.density) > 2) or (m/self.density < 0):
+                    print('Balance measurement error')
                     break
                 if (liquid_level > initial_liquid_level_source) or (liquid_level < 6):
+                    print('Liquid level too high or too low')
                     break
+                
 
             counter += 1
 
@@ -755,17 +758,19 @@ class BO_LiqTransfer:
 
                 self.set_data(pd.concat([self._data,df]).reset_index(drop=True))
                 #printing checks
-                print("LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(1.2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
+                print("LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
 
 
                 
                 #printing checks
-                print("LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(1.2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
+                print("LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
 
                 #liquid level checks
-                if (1.2*m/self.density > 1.2) or (1.2*m/self.density < 0):
+                if  (m/(volume*self.density) > 2) or (m/self.density < 0):
+                    print('Balance measurement error')
                     break
                 if (liquid_level > initial_liquid_level_source) or (liquid_level < 6):
+                    print('Liquid level too high or too low')                   
                     break
             
             counter += 1
@@ -823,20 +828,17 @@ class BO_LiqTransfer:
                 m=df.m.iloc[-1]
 
                 #printing checks
-                print("Mass: "+str(m)+"LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(1.2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
+                print("Mass: "+str(m)+"LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
 
                 #liquid level checks
-                if (m/self.density > 1.2) or (m/self.density < 0):
+                if (m/(volume*self.density) > 2) or (m/self.density < 0):
+                    print('Balance measurement error')
                     break
                 if (liquid_level > initial_liquid_level_source) or (liquid_level < 6):
+                    print('Liquid level too high or too low')
                     break
 
                 counter += 1
-            #liquid level checks
-            if (m/self.density > 1.2) or (m/self.density < 0):
-                break
-            if (liquid_level > initial_liquid_level_source) or (liquid_level < 6): 
-                break
         
         calibration_df['volume_transferred'] = calibration_df['m']/calibration_df['density']*1000
         calibration_df['volume_error'] = calibration_df['volume_transferred'] - calibration_df['volume']
