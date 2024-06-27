@@ -593,7 +593,7 @@ class BO_LiqTransfer:
 
         #Switching the balance off after change in mass is less than 0.05
         while True:
-            data = self.massBalance.buffer_df
+            data = self.massBalance.buffer_df.copy()
             data['Mass_smooth']= signal.savgol_filter(data['Mass'],91,1)
             data['Mass_derivative_smooth']=data['Mass_smooth'].diff()
             condition=data['Mass_derivative_smooth'].rolling(30).mean().iloc[-1]
@@ -826,14 +826,14 @@ class BO_LiqTransfer:
                 print("Mass: "+str(m)+"LIQUID LEVEL: " +str(liquid_level) + "   LIQUID CHANGE: " +str(1.2*m/self.density) + "   ITERATION: " + str(counter) + ", " + "VOLUME: " + str(volume))    
 
                 #liquid level checks
-                if (1.2*m/self.density > 1.2) or (1.2*m/self.density < 0):
+                if (m/self.density > 1.2) or (m/self.density < 0):
                     break
                 if (liquid_level > initial_liquid_level_source) or (liquid_level < 6):
                     break
 
                 counter += 1
             #liquid level checks
-            if (1.2*m/self.density > 1.2) or (1.2*m/self.density < 0):
+            if (m/self.density > 1.2) or (m/self.density < 0):
                 break
             if (liquid_level > initial_liquid_level_source) or (liquid_level < 6): 
                 break
