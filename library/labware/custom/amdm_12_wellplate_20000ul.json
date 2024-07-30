@@ -44,8 +44,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 21.75,
-            "y": 71.85,
+            "x": 18.65,
+            "y": 71.65,
             "z": 6.4
         },
         "B1": {
@@ -53,8 +53,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 21.75,
-            "y": 43.35,
+            "x": 18.65,
+            "y": 43.15,
             "z": 6.4
         },
         "C1": {
@@ -62,8 +62,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 21.75,
-            "y": 14.85,
+            "x": 18.65,
+            "y": 14.65,
             "z": 6.4
         },
         "A2": {
@@ -71,8 +71,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 50.45,
-            "y": 71.85,
+            "x": 47.35,
+            "y": 71.65,
             "z": 6.4
         },
         "B2": {
@@ -80,8 +80,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 50.45,
-            "y": 43.35,
+            "x": 47.35,
+            "y": 43.15,
             "z": 6.4
         },
         "C2": {
@@ -89,8 +89,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 50.45,
-            "y": 14.85,
+            "x": 47.35,
+            "y": 14.65,
             "z": 6.4
         },
         "A3": {
@@ -98,8 +98,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 79.15,
-            "y": 71.85,
+            "x": 76.05,
+            "y": 71.65,
             "z": 6.4
         },
         "B3": {
@@ -107,8 +107,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 79.15,
-            "y": 43.35,
+            "x": 76.05,
+            "y": 43.15,
             "z": 6.4
         },
         "C3": {
@@ -116,8 +116,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 79.15,
-            "y": 14.85,
+            "x": 76.05,
+            "y": 14.65,
             "z": 6.4
         },
         "A4": {
@@ -125,8 +125,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 107.85,
-            "y": 71.85,
+            "x": 104.75,
+            "y": 71.65,
             "z": 6.4
         },
         "B4": {
@@ -134,8 +134,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 107.85,
-            "y": 43.35,
+            "x": 104.75,
+            "y": 43.15,
             "z": 6.4
         },
         "C4": {
@@ -143,8 +143,8 @@
             "totalLiquidVolume": 20000,
             "shape": "circular",
             "diameter": 17,
-            "x": 107.85,
-            "y": 14.85,
+            "x": 104.75,
+            "y": 14.65,
             "z": 6.4
         }
     },
