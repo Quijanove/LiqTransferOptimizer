@@ -33,7 +33,7 @@ from botorch.models.gp_regression import SingleTaskGP
 from botorch.models.model_list_gp_regression import ModelListGP
 from botorch.models.transforms.outcome import Standardize
 from gpytorch.mlls.sum_marginal_log_likelihood import SumMarginalLogLikelihood
-from botorch import fit_gpytorch_model
+from botorch import fit_gpytorch_mll
 
 # qNEHVI specific
 from botorch.acquisition.multi_objective.objective import IdentityMCMultiOutputObjective
@@ -171,14 +171,14 @@ class BO_LiqTransfer:
     
     @platform.setter
     def platform(self, setup):
-        if str(type(setup)) != "<class 'controllably.misc.misc_utils.Setup'>":
-            raise Exception('This is not a controllably.misc.misc_utils.Setup object.')
+        if setup.__class__.__name__ != "Platform":
+            raise Exception('This is not a Platform object.')
 
-        for object in list(setup._asdict().values()):
-            if object.__class__.__name__ == "LiquidMoverSetup":
+        for object in list(setup.__dict__.values()):
+            if object.__class__.__name__ == "LiquidMover":
                 self.pipetteRobot = object
 
-            if object.__class__.__name__ == "MassBalance":
+            if object.__class__.__name__ == "Balance":
                 self.massBalance = object
 
         if self.pipetteRobot == None:
@@ -186,7 +186,7 @@ class BO_LiqTransfer:
                 Please load a LiquidMoverSetup object using the self.pipetteRobot before starting optimization""")
             
         elif self.massBalance == None:
-            print("""Setup Object assigned to self._platform does not contain a MassBalance object.
+            print("""Setup Object assigned to self._platform does not contain a Balance object.
                 Please load a MassBalance object using the self.massBalance  before starting optimization""")
 
         elif (self.massBalance == None and self.pipetteRobot == None): 
@@ -421,7 +421,7 @@ class BO_LiqTransfer:
         model1 = ModelListGP(*models)
         mll1 = SumMarginalLogLikelihood(model1.likelihood, model1)
 
-        fit_gpytorch_model(mll1)
+        fit_gpytorch_mll(mll1)
     
         return model1, ref_point, train_x_gp, problem_bounds
     
@@ -442,7 +442,7 @@ class BO_LiqTransfer:
         model=model1,
         ref_point=ref_point, # for computing HV, must flip for BoTorch
         X_baseline=train_x_gp, # feed total list of train_x for this current iteration
-        sampler=SobolQMCNormalSampler(sample_shape=512),  # determines how candidates are randomly proposed before selection
+        sampler=SobolQMCNormalSampler(sample_shape=torch.Size([512])),  # determines how candidates are randomly proposed before selection
         objective=IdentityMCMultiOutputObjective(outcomes=np.arange(len(self.objectives)).tolist()), # optimize first n_obj col 
         prune_baseline=True, cache_pending=True)  # options for improving qNEHVI, keep these on
         sobol1 = draw_sobol_samples(bounds=standard_bounds,n=512, q=1).squeeze(1)
@@ -460,7 +460,7 @@ class BO_LiqTransfer:
         qnehvi_x = torch.tensor(sorted_x[-12:], **tkwargs)  
         # unormalize our training inputs back to original problem bounds
         new_x =  unnormalize(qnehvi_x, bounds=problem_bounds)
-        new_x = pd.DataFrame(new_x.numpy(),columns= self.features)
+        new_x = pd.DataFrame(new_x.cpu().numpy(),columns= self.features)
         new_x['acq_value'] = sorted(acq_value_list, reverse=True)[:12]
         self._latest_suggestion = new_x[self.features].iloc[0]
         self._latest_acq_value = new_x['acq_value'].iloc[0]
@@ -470,7 +470,7 @@ class BO_LiqTransfer:
     
     ### Methods for controlling robotic platform
 
-    def cleanTip(self, well, speed_factor:float = 0.2, repetitions:int = 9):
+    def cleanTip(self, well, speed_factor:float = 0.2, repetitions:int = 1):
         """
         Executes commands to clean pipette tip using a cycles of blowouts
         and plunger homing
@@ -484,9 +484,8 @@ class BO_LiqTransfer:
         self.pipetteRobot.mover.safeMoveTo(well.top)
         
         for i in range(repetitions):
-            self.pipetteRobot.liquid.blowout(home=False) 
+            self.pipetteRobot.liquid.blowout(home=True) 
             time.sleep(5)
-            self.pipetteRobot.liquid.home()
             self.pipetteRobot.touchTip(well,speed_factor = speed_factor)
             time.sleep(5)
 
@@ -508,17 +507,17 @@ class BO_LiqTransfer:
         start = time.time() 
 
         #aspirate step
-        self.pipetteRobot.mover.safeMoveTo(source_well.from_bottom((0,0,liquid_level-5))) 
+        self.pipetteRobot.mover.safeMoveTo(source_well.fromBottom((0,0,liquid_level-5))) 
         self.pipetteRobot.liquid.aspirate(volume, speed=self._param_dict['aspiration_rate'] )
         time.sleep(self._param_dict['delay_aspirate'])
 
         self.pipetteRobot.touchTip(source_well) 
 
         #dispense step
-        self.pipetteRobot.mover.safeMoveTo(balance_well.from_top((0,0,-5))) 
-        self.massBalance.tare() 
+        self.pipetteRobot.mover.safeMoveTo(balance_well.fromTop((0,0,-5))) 
+        self.massBalance.zero() 
         self.massBalance.clearCache() 
-        self.massBalance.toggleRecord(True) 
+        self.massBalance.record(True,False) 
         time.sleep(5)
         self.pipetteRobot.liquid.dispense(volume,speed=self._param_dict['dispense_rate'] )
         time.sleep(self._param_dict['delay_dispense'])
@@ -529,7 +528,7 @@ class BO_LiqTransfer:
 
         self.pipetteRobot.mover.safeMoveTo(source_well.top) 
         time.sleep(5)
-        self.massBalance.toggleRecord(False) 
+        self.massBalance.record(False,False) 
 
         #do blowout
         
@@ -537,7 +536,7 @@ class BO_LiqTransfer:
 
         #record transfer values 
         #calculating mass error functions
-        m = (self.massBalance.buffer_df.iloc[-10:,-1].mean()-self.massBalance.buffer_df.iloc[:10,-1].mean())/1000 
+        m = (self.massBalance.records_df.iloc[-10:,-1].mean()-self.massBalance.records_df.iloc[:10,-1].mean())/1000 
         error = (m-self.density*volume/1000)/(self.density/1000*volume)*100
         
         #change liquid levels
@@ -581,40 +580,40 @@ class BO_LiqTransfer:
         if self.pipetteRobot.liquid.isTipOn()== False:
             self.pipetteRobot.attachTip()
         
-        self.pipetteRobot.mover.safeMoveTo(balance_well.from_bottom((0,0,liquid_level-5)),descent_speed_fraction=0.25)
+        self.pipetteRobot.mover.safeMoveTo(balance_well.fromBottom((0,0,liquid_level-5)),speed_factor_down=0.25)
         #Starting balance measurement
         time.sleep(5)
-        self.massBalance.zero(wait=5)
+        self.massBalance.zero()
         self.massBalance.clearCache()
-        self.massBalance.toggleRecord(on=True)
+        self.massBalance.record(True,False)
         time.sleep(15)
 
         self.pipetteRobot.liquid.aspirate(1000, speed=speed)
 
         #Switching the balance off after change in mass is less than 0.05
         while True:
-            data = self.massBalance.buffer_df.copy()
-            data['Mass_smooth']= signal.savgol_filter(data['Mass'],91,1)
-            data['Mass_derivative_smooth']=data['Mass_smooth'].diff()
+            data = self.massBalance.records_df.copy()
+            data['mass_smooth']= signal.savgol_filter(data['mass'],91,1)
+            data['Mass_derivative_smooth']=data['mass_smooth'].diff()
             condition=data['Mass_derivative_smooth'].rolling(30).mean().iloc[-1]
             if condition>-0.05:
                 break
         print('loop stopped')
-        self.massBalance.toggleRecord(on=False)
+        self.massBalance.record(False,False)
 
-        self.pipetteRobot.mover.moveTo(balance_well.from_top((0,0,-5)))
+        self.pipetteRobot.mover.moveTo(balance_well.fromTop((0,0,-5)))
 
 
         #using data from balance buffer_df above, calculate time in seconds and mass derivatives
-        data['ts'] = data['Time'].astype('datetime64[ns]').values.astype('float') / 10 ** 9
+        data['ts'] = data['timestamp'].astype('datetime64[ns]').values.astype('float') / 10 ** 9
         data['ts']= data['ts']-data['ts'][0]
         data_fit = data.where(data['ts']>10).dropna()
-        data_fit['Mass']=data_fit['Mass']-data_fit['Mass'].iloc[0]
-        data_fit['Mass_smooth'] = data_fit['Mass_smooth']-data_fit['Mass_smooth'].iloc[0]
+        data_fit['mass']=data_fit['mass']-data_fit['mass'].iloc[0]
+        data_fit['mass_smooth'] = data_fit['mass_smooth']-data_fit['mass_smooth'].iloc[0]
 
-        p0 = [min(data_fit['Mass']), np.median(data_fit['ts']),1,1,max(data_fit['Mass'])+30]
+        p0 = [min(data_fit['mass']), np.median(data_fit['ts']),1,1,max(data_fit['mass'])+30]
         
-        popt, pcov = curve_fit(self.sigmoid, data_fit['ts'], data_fit['Mass'],p0)
+        popt, pcov = curve_fit(self.sigmoid, data_fit['ts'], data_fit['mass'],p0)
 
         mass_sigmoid = self.sigmoid(data_fit['ts'],popt[0],popt[1],popt[2],popt[3],popt[4])
 
